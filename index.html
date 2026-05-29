@@ -905,10 +905,12 @@ function renderPlan() {
 // ── RENDER KB ──
 function renderKB() {
   const el = document.getElementById('kb-grid');
+  const openDomains = new Set([...el.querySelectorAll('.kb-domain.open')].map(d => d.dataset.domain));
   el.innerHTML = '';
   KB.forEach(domain => {
     const div = document.createElement('div');
-    div.className = 'kb-domain';
+    div.className = 'kb-domain' + (openDomains.has(domain.domain) ? ' open' : '');
+    div.dataset.domain = domain.domain;
     const doneCount = domain.items.filter(item => state.kb[domain.domain + ':' + item]).length;
     div.innerHTML = `
       <div class="kb-domain-header" onclick="this.parentElement.classList.toggle('open')">
@@ -926,7 +928,8 @@ function renderKB() {
       }).join('')}</div>
     `;
     div.querySelectorAll('.kb-item').forEach(item => {
-      item.onclick = () => {
+      item.onclick = (e) => {
+        e.stopPropagation();
         const key = item.dataset.key;
         state.kb[key] = !state.kb[key];
         save();
