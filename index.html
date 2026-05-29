@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecPrep</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%23635bff'/%3E%3Crect x='8' y='8' width='7' height='7' rx='3.5' fill='white'/%3E%3Crect x='17' y='8' width='7' height='7' rx='2' fill='white' opacity='0.55'/%3E%3Crect x='8' y='17' width='7' height='7' rx='2' fill='white' opacity='0.55'/%3E%3Ccircle cx='20.5' cy='20.5' r='3.5' fill='white' opacity='0.85'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f7f8;
+  --bg2: #ffffff;
+  --bg3: #f1f1f3;
+  --bg4: #e8e8ec;
+  --border: rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.13);
+  --text: #111118;
+  --text2: #5a5a72;
+  --text3: #9898b0;
+  --accent: #635bff;
+  --accent2: #0052ff;
+  --green: #1a9e6e;
+  --amber: #d97706;
+  --red: #dc2626;
+  --blue: #0052ff;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── SUBTLE GRID OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ── LAYOUT ── */
+.shell { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #f0f0f4;
+  border-right: 1px solid var(--border);
+  padding: 28px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-logo {
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .mark {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar-logo .mark .dot {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.sidebar-logo .sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 3px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+}
+.nav-group { margin-bottom: 4px; padding: 0 12px; }
+.nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 8px 4px;
+  font-family: 'DM Mono', monospace;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text2);
+  font-size: 13px;
+}
+.nav-item:hover { background: rgba(0,0,0,0.05); color: var(--text); }
+.nav-item.active { background: rgba(99,91,255,0.08); color: var(--accent); }
+.nav-item .nav-icon { width: 16px; font-size: 13px; opacity: 0.7; }
+.nav-item .nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text3);
+  background: rgba(0,0,0,0.06);
+  padding: 1px 6px;
+  border-radius: 20px;
+}
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 20px 0;
+  border-top: 1px solid var(--border);
+}
+.progress-ring-wrap { display: flex; align-items: center; gap: 10px; }
+.progress-label-small { font-size: 12px; color: var(--text2); }
+.progress-pct { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 500; color: #635bff; }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  padding: 40px 48px;
+  max-width: 1100px;
+  overflow: hidden;
+}
+.page { display: none; animation: fadeUp 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── PAGE HEADERS ── */
+.page-header { margin-bottom: 32px; }
+.page-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.page-sub { color: var(--text2); font-size: 14px; margin-top: 6px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border2); }
+
+/* ── OVERVIEW ── */
+.overview-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+.stat-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.03em; }
+.stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+/* ── COMPANIES ── */
+.companies-section { margin-bottom: 28px; }
+.section-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; letter-spacing: -0.01em; margin-bottom: 14px; color: var(--text2); text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em; }
+.company-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 10px; }
+.company-tile {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 14px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.company-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--tile-accent, transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.company-tile:hover { border-color: var(--border2); transform: translateY(-1px); }
+.company-tile:hover::before { opacity: 0.05; }
+.company-tile.done { border-color: rgba(26,158,110,0.3); }
+.company-logo { height: 22px; margin-bottom: 10px; display: flex; align-items: center; }
+.company-logo svg { width: auto; height: 100%; }
+.company-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.company-focus { font-size: 10px; color: var(--text3); line-height: 1.4; }
+.company-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+.status-todo { background: rgba(0,0,0,0.04); color: var(--text3); border: 1px solid var(--border); }
+.status-in { background: rgba(99,91,255,0.08); color: #635bff; border: 1px solid rgba(99,91,255,0.2); }
+.status-done { background: rgba(26,158,110,0.08); color: #1a9e6e; border: 1px solid rgba(26,158,110,0.2); }
+
+/* ── DOMAIN COVERAGE ── */
+.domain-list { display: flex; flex-direction: column; gap: 8px; }
+.domain-row {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.domain-icon { font-size: 18px; width: 28px; flex-shrink: 0; }
+.domain-info { flex: 1; min-width: 0; }
+.domain-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.domain-desc { font-size: 11px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.domain-bar-wrap { width: 130px; flex-shrink: 0; }
+.domain-bar-bg { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+.domain-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+.domain-pct { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); text-align: right; margin-top: 3px; }
+.domain-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tag-strong { background: rgba(26,158,110,0.1); color: #1a9e6e; border: 1px solid rgba(26,158,110,0.2); }
+.tag-partial { background: rgba(217,119,6,0.1); color: #d97706; border: 1px solid rgba(217,119,6,0.2); }
+.tag-gap { background: rgba(220,38,38,0.08); color: #dc2626; border: 1px solid rgba(220,38,38,0.15); }
+
+/* ── WEEKS ── */
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 14px;
+}
+.phase-badge {
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.phase-1 { background: rgba(0,82,255,0.08); color: #0052ff; border: 1px solid rgba(0,82,255,0.15); }
+.phase-2 { background: rgba(217,119,6,0.08); color: #d97706; border: 1px solid rgba(217,119,6,0.15); }
+.phase-3 { background: rgba(26,158,110,0.08); color: #1a9e6e; border: 1px solid rgba(26,158,110,0.15); }
+.phase-4 { background: rgba(99,91,255,0.08); color: #635bff; border: 1px solid rgba(99,91,255,0.15); }
+.phase-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 15px; }
+.phase-sub { font-size: 12px; color: var(--text3); }
+.weeks-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 10px; }
+.week-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.week-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.week-card.checked { border-color: rgba(26,158,110,0.35); background: linear-gradient(135deg, #fff, rgba(26,158,110,0.03)); }
+.week-card .week-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.week-card .week-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 10px; letter-spacing: -0.01em; }
+.week-topics { list-style: none; display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.week-topics li { font-size: 12px; color: var(--text2); display: flex; gap: 7px; line-height: 1.4; }
+.week-topics li::before { content: '—'; color: var(--text3); flex-shrink: 0; }
+.week-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); }
+.week-hrs { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+.week-check {
+  width: 22px; height: 22px;
+  border: 1.5px solid var(--border2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: transparent;
+  transition: all 0.2s;
+}
+.week-card.checked .week-check { background: #1a9e6e; border-color: #1a9e6e; color: #fff; }
+
+/* ── KNOWLEDGE BASE ── */
+.kb-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 12px; }
+.kb-domain {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.kb-domain-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.kb-domain-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; flex: 1; }
+.kb-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+.kb-chevron { font-size: 12px; color: var(--text3); transition: transform 0.2s; }
+.kb-domain.open .kb-chevron { transform: rotate(180deg); }
+.kb-items { display: none; padding: 8px 0; }
+.kb-domain.open .kb-items { display: block; }
+.kb-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.kb-item:hover { background: var(--bg3); }
+.kb-checkbox {
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--border2);
+  border-radius: 3px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: transparent;
+  transition: all 0.15s;
+}
+.kb-item.done .kb-checkbox { background: #1a9e6e; border-color: #1a9e6e; color: #fff; }
+.kb-item-text { font-size: 12px; color: var(--text2); }
+.kb-item.done .kb-item-text { color: var(--text3); text-decoration: line-through; }
+
+/* ── GAP ANALYSIS ── */
+.gap-list { display: flex; flex-direction: column; gap: 10px; }
+.gap-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+.gap-priority {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.gap-high { background: rgba(220,38,38,0.06); color: #dc2626; border: 1px solid rgba(220,38,38,0.15); }
+.gap-med { background: rgba(217,119,6,0.07); color: #d97706; border: 1px solid rgba(217,119,6,0.15); }
+.gap-low { background: rgba(0,82,255,0.06); color: #0052ff; border: 1px solid rgba(0,82,255,0.15); }
+.gap-body { flex: 1; }
+.gap-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 14px; margin-bottom: 5px; }
+.gap-detail { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.gap-resources { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.gap-resource {
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: rgba(99,91,255,0.06);
+  color: #635bff;
+  border: 1px solid rgba(99,91,255,0.15);
+}
+
+/* ── BEHAVIORAL ── */
+.behavioral-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.story-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.story-title { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; margin-bottom: 14px; color: var(--text); }
+.star-field { margin-bottom: 10px; }
+.star-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.star-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  resize: vertical;
+  min-height: 52px;
+  transition: border-color 0.15s;
+}
+.star-input:focus { outline: none; border-color: rgba(99,91,255,0.4); }
+.star-input::placeholder { color: var(--text3); }
+
+/* ── RESOURCES ── */
+.res-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 10px; }
+.res-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.res-domain-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 10px; }
+.res-item { padding: 7px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.res-item:last-child { border-bottom: none; }
+.res-text { font-size: 12px; color: var(--text2); flex: 1; line-height: 1.4; }
+.res-type {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.r-free { background: rgba(26,158,110,0.08); color: #1a9e6e; border: 1px solid rgba(26,158,110,0.15); }
+.r-lab { background: rgba(0,82,255,0.07); color: #0052ff; border: 1px solid rgba(0,82,255,0.15); }
+.r-paid { background: rgba(217,119,6,0.08); color: #d97706; border: 1px solid rgba(217,119,6,0.15); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="mark"><div class="dot"></div> SecPrep</div>
+    <div class="sub">10-week plan · 3hr/day</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active" onclick="goto('overview',this)"><span class="nav-icon">◈</span> Dashboard</div>
+    <div class="nav-item" onclick="goto('companies',this)"><span class="nav-icon">◉</span> Companies <span class="nav-badge">16</span></div>
+    <div class="nav-item" onclick="goto('gaps',this)"><span class="nav-icon">△</span> Gap Analysis</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Prep</div>
+    <div class="nav-item" onclick="goto('plan',this)"><span class="nav-icon">▦</span> 10-Week Plan <span class="nav-badge" id="weeks-badge">0/10</span></div>
+    <div class="nav-item" onclick="goto('kb',this)"><span class="nav-icon">⊞</span> Knowledge Base</div>
+    <div class="nav-item" onclick="goto('behavioral',this)"><span class="nav-icon">◎</span> Behavioral</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Reference</div>
+    <div class="nav-item" onclick="goto('resources',this)"><span class="nav-icon">↗</span> Resources</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="progress-ring-wrap">
+      <div>
+        <div class="progress-pct" id="overall-pct">0%</div>
+        <div class="progress-label-small">overall progress</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ── DASHBOARD ── -->
+<div class="page active" id="page-overview">
+  <div class="page-header">
+    <div class="page-eyebrow">Mission Control</div>
+    <div class="page-title">Security Interview Prep</div>
+    <div class="page-sub">Senior roles at top tech · 16 target companies · 10 weeks</div>
+  </div>
+
+  <div class="overview-grid">
+    <div class="stat-card">
+      <div class="stat-label">Target Companies</div>
+      <div class="stat-value" style="color:#635bff">16</div>
+      <div class="stat-sub">FAANG + fintech + AI</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Hours</div>
+      <div class="stat-value" style="color:var(--blue)">210+</div>
+      <div class="stat-sub">3 hrs/day · 10 weeks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Domains</div>
+      <div class="stat-value" style="color:var(--green)">9</div>
+      <div class="stat-sub">tracked domains</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Topics</div>
+      <div class="stat-value" style="color:var(--accent2)"><span id="done-count">0</span>/<span id="total-count">0</span></div>
+      <div class="stat-sub">knowledge base items</div>
+    </div>
+  </div>
+
+  <div class="companies-section">
+    <div class="section-title">Target Companies</div>
+    <div class="company-grid" id="company-grid"></div>
+  </div>
+
+  <div>
+    <div class="section-title">Domain Coverage</div>
+    <div class="domain-list" id="domain-list"></div>
+  </div>
+</div>
+
+<!-- ── COMPANIES ── -->
+<div class="page" id="page-companies">
+  <div class="page-header">
+    <div class="page-eyebrow">Target List</div>
+    <div class="page-title">Companies</div>
+    <div class="page-sub">Click to toggle prep status for each company</div>
+  </div>
+  <div class="company-grid" id="company-grid-full" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
+</div>
+
+<!-- ── GAP ANALYSIS ── -->
+<div class="page" id="page-gaps">
+  <div class="page-header">
+    <div class="page-eyebrow">Where to focus</div>
+    <div class="page-title">Gap Analysis</div>
+    <div class="page-sub">Sorted by interview impact. Address high-priority gaps first.</div>
+  </div>
+  <div class="gap-list" id="gap-list"></div>
+</div>
+
+<!-- ── PLAN ── -->
+<div class="page" id="page-plan">
+  <div class="page-header">
+    <div class="page-eyebrow">Structure</div>
+    <div class="page-title">10-Week Plan</div>
+    <div class="page-sub">Check off weeks as you complete them</div>
+  </div>
+  <div id="plan-content"></div>
+</div>
+
+<!-- ── KB ── -->
+<div class="page" id="page-kb">
+  <div class="page-header">
+    <div class="page-eyebrow">Full index</div>
+    <div class="page-title">Knowledge Base</div>
+    <div class="page-sub">Check off topics as you become interview-ready on each one</div>
+  </div>
+  <div class="kb-grid" id="kb-grid"></div>
+</div>
+
+<!-- ── BEHAVIORAL ── -->
+<div class="page" id="page-behavioral">
+  <div class="page-header">
+    <div class="page-eyebrow">Stories</div>
+    <div class="page-title">Behavioral Prep</div>
+    <div class="page-sub">Write your STAR stories here. Auto-saved in your browser.</div>
+  </div>
+  <div class="behavioral-grid" id="behavioral-grid"></div>
+</div>
+
+<!-- ── RESOURCES ── -->
+<div class="page" id="page-resources">
+  <div class="page-header">
+    <div class="page-eyebrow">Study material</div>
+    <div class="page-title">Resources</div>
+    <div class="page-sub">Curated by domain. Most are free.</div>
+  </div>
+  <div class="res-grid" id="res-grid"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── DATA ──
+
+const COMPANIES = [
+  { name:'Google', focus:'BeyondCorp · GCP IAM · Browser sec', color:'#4285F4',
+    logo:`<svg viewBox="0 0 74 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.24 8.19c0-.52-.06-1.02-.17-1.5H4.72v2.84h2.53c-.11.6-.44 1.11-.93 1.45v1.2h1.5c.88-.81 1.38-2 1.38-3z" fill="#4285F4"/><path d="M4.72 12.32c1.26 0 2.32-.42 3.09-1.13l-1.5-1.2c-.42.28-.96.45-1.59.45-1.22 0-2.25-.82-2.62-1.93H.54v1.23A4.66 4.66 0 004.72 12.32z" fill="#34A853"/><path d="M2.1 8.51a2.8 2.8 0 010-1.79V5.49H.54A4.66 4.66 0 000 7.62c0 .75.18 1.46.54 2.12L2.1 8.51z" fill="#FBBC05"/><path d="M4.72 4.79c.69 0 1.3.24 1.79.7l1.34-1.34A4.63 4.63 0 004.72 2.95 4.66 4.66 0 00.54 5.49L2.1 6.72c.37-1.1 1.4-1.93 2.62-1.93z" fill="#EA4335"/></svg>`},
+  { name:'Meta', focus:'Prodsec at scale · Detection · SDLC', color:'#0082FB',
+    logo:`<svg viewBox="0 0 60 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="800" font-size="15" fill="#0082FB">Meta</text></svg>`},
+  { name:'Amazon', focus:'AWS IAM · Cloud misconfigs · LPs', color:'#FF9900',
+    logo:`<svg viewBox="0 0 60 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="700" font-size="13" fill="#FF9900">amazon</text></svg>`},
+  { name:'Apple', focus:'Secure Enclave · iOS/macOS · TEE', color:'#aaaaaa',
+    logo:`<svg viewBox="0 0 20 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="#999"/></svg>`},
+  { name:'Netflix', focus:'Detection eng · eBPF · Cloud-native', color:'#E50914',
+    logo:`<svg viewBox="0 0 50 24" xmlns="http://www.w3.org/2000/svg"><text y="18" font-family="Arial" font-weight="900" font-size="16" fill="#E50914">N</text></svg>`},
+  { name:'Stripe', focus:'Supply chain · PCI · Cryptography', color:'#635BFF',
+    logo:`<svg viewBox="0 0 50 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="700" font-size="14" fill="#635BFF">stripe</text></svg>`},
+  { name:'Coinbase', focus:'Key mgmt · HSM · Supply chain', color:'#0052FF',
+    logo:`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#0052FF"/><path d="M12 6a6 6 0 100 12A6 6 0 0012 6zm0 9.6a3.6 3.6 0 110-7.2 3.6 3.6 0 010 7.2z" fill="white"/></svg>`},
+  { name:'Robinhood', focus:'Fintech sec · Auth · Fraud', color:'#00C805',
+    logo:`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 7v10l8 5 8-5V7L12 2z" fill="none" stroke="#00C805" stroke-width="1.5"/></svg>`},
+  { name:'Anthropic', focus:'Model security · Infra · Supply chain', color:'#D97706',
+    logo:`<svg viewBox="0 0 60 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="serif" font-size="13" fill="#D97706">Anthropic</text></svg>`},
+  { name:'OpenAI', focus:'AI threats · Infra · Access control', color:'#10A37F',
+    logo:`<svg viewBox="0 0 60 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="600" font-size="13" fill="#10A37F">OpenAI</text></svg>`},
+  { name:'Airbnb', focus:'Prodsec at scale · Advanced web vulns', color:'#FF5A5F',
+    logo:`<svg viewBox="0 0 50 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="700" font-size="13" fill="#FF5A5F">airbnb</text></svg>`},
+  { name:'Uber', focus:'Microservices · Fraud · eBPF', color:'#000000',
+    logo:`<svg viewBox="0 0 50 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="900" font-size="15" fill="#fff">Uber</text></svg>`},
+  { name:'Figma', focus:'Collab security · Sharing · Access control', color:'#F24E1E',
+    logo:`<svg viewBox="0 0 14 20" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 20C5.43 20 7 18.43 7 16.5V13H3.5C1.57 13 0 14.57 0 16.5S1.57 20 3.5 20z" fill="#0ACF83"/><path d="M0 10c0-1.93 1.57-3.5 3.5-3.5H7v7H3.5C1.57 13.5 0 11.93 0 10z" fill="#A259FF"/><path d="M0 3.5C0 1.57 1.57 0 3.5 0H7v7H3.5C1.57 7 0 5.43 0 3.5z" fill="#F24E1E"/><path d="M7 0h3.5C12.43 0 14 1.57 14 3.5S12.43 7 10.5 7H7V0z" fill="#FF7262"/><path d="M14 10c0 1.93-1.57 3.5-3.5 3.5S7 11.93 7 10s1.57-3.5 3.5-3.5S14 8.07 14 10z" fill="#1ABCFE"/></svg>`},
+  { name:'Dropbox', focus:'File security · Sharing · Encryption', color:'#0061FF',
+    logo:`<svg viewBox="0 0 50 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="700" font-size="13" fill="#0061FF">Dropbox</text></svg>`},
+  { name:'Canva', focus:'Content sec · Collab · ProdSec', color:'#7D2AE7',
+    logo:`<svg viewBox="0 0 50 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="700" font-size="14" fill="#7D2AE7">Canva</text></svg>`},
+  { name:'Grammarly', focus:'Data privacy · Browser ext sec', color:'#15C39A',
+    logo:`<svg viewBox="0 0 60 24" xmlns="http://www.w3.org/2000/svg"><text y="17" font-family="Arial" font-weight="700" font-size="13" fill="#15C39A">Grammarly</text></svg>`},
+];
+
+const DOMAINS = [
+  { icon:'🔒', name:'Secure Design Principles', desc:'PoLP, DiD, STRIDE, Fail-secure', pct:92, tag:'strong' },
+  { icon:'🌐', name:'Networking & Protocols', desc:'TLS, DNS, MitM, VPNs, eBPF', pct:80, tag:'strong' },
+  { icon:'🕸️', name:'Web / Application Security', desc:'OWASP Top 10, CORS, CSRF, XSS, SSRF', pct:88, tag:'strong' },
+  { icon:'☁️', name:'Cloud & Infrastructure', desc:'AWS IAM, K8s, CSPM, IMDSv2', pct:35, tag:'gap' },
+  { icon:'🔑', name:'Cryptography', desc:'Symmetric, asymmetric, PKI, JWT', pct:72, tag:'strong' },
+  { icon:'👤', name:'Identity & Access Management', desc:'OAuth, SAML, OIDC, PAM', pct:75, tag:'strong' },
+  { icon:'💻', name:'OS / Low-Level Security', desc:'Linux, Windows, ASLR, privesc', pct:82, tag:'strong' },
+  { icon:'📦', name:'Distributed Systems & APIs', desc:'System design, supply chain, SBOM', pct:60, tag:'partial' },
+  { icon:'🔍', name:'Detection & Response / IR', desc:'SIEM, incident response, MITRE', pct:22, tag:'gap' },
+];
+
+const GAPS = [
+  { priority:'HIGH', title:'Cloud Security', detail:'IMDSv2, IRSA, workload identity, pod security standards, CSPM tools, cloud-native misconfigs. Google, Amazon, Stripe and Coinbase always go deep here.', resources:['CloudGoat', 'flaws.cloud', 'HackTricks Cloud', 'AWS IAM docs'] },
+  { priority:'HIGH', title:'Detection & Response / SIEM', detail:'IR lifecycle (all 6 phases), log correlation, IOC types, SIEM query logic, EDR concepts. Even prodsec roles at Netflix/Meta ask about detection coverage.', resources:['NIST SP 800-61', 'MITRE ATT&CK', 'Blue Team Labs', 'Splunk training'] },
+  { priority:'HIGH', title:'Supply Chain Security & SBOM', detail:'SolarWinds/XZ-utils-style attacks, dependency confusion, SLSA framework, artifact signing (Sigstore/cosign), SBOM formats. Hot at Coinbase, Stripe, Anthropic, OpenAI.', resources:['slsa.dev', 'Sigstore docs', 'Birsan writeup', 'CISA guidance'] },
+  { priority:'HIGH', title:'Secure SDLC & Security Program Design', detail:'Threat modeling at velocity, security champions, SAST/DAST/SCA in CI/CD, security reviews without being a bottleneck. Heavy in security SWE / prodsec roles.', resources:['OWASP SAMM', 'Semgrep', 'Snyk docs'] },
+  { priority:'MED', title:'HTTP Request Smuggling & Advanced Web Vulns', detail:'CL.TE and TE.CL desync, prototype pollution, cache poisoning, subdomain takeover. Separates junior from senior prodsec at Airbnb, Uber, Figma.', resources:['PortSwigger Academy', 'James Kettle research'] },
+  { priority:'MED', title:'Zero Trust / BeyondCorp Depth', detail:'Device trust signals, continuous authorization, policy engines. Listed but needs depth — Google probes this hard.', resources:['BeyondCorp papers', 'NIST ZTA guide'] },
+  { priority:'MED', title:'eBPF for Security', detail:'Runtime security tools (Falco, Tetragon, Cilium). CloudSec/infra roles at Netflix, Meta, Uber increasingly ask about this.', resources:['Falco docs', 'Tetragon docs', 'eBPF.io'] },
+  { priority:'LOW', title:'Secure Enclaves / TEE / Hardware Root of Trust', detail:'TPM, SGX/TDX, Apple Secure Enclave, HSMs, measured boot. Relevant for Apple, Coinbase, Anthropic.', resources:['Apple security guide', 'Intel SGX docs'] },
+];
+
+const PLAN = [
+  { phase:1, label:'Phase 1', name:'Solidify Foundations', sub:'Lock in what you know, fill easy gaps', weeks:[
+    { n:'01', title:'Threat Modeling Depth', topics:['STRIDE end-to-end on real systems','PASTA & LINDDUN frameworks','Data flow diagrams + trust boundaries','Practice: threat model OAuth flow'], hrs:'~21 hrs' },
+    { n:'02', title:'Web Security Depth', topics:['HTTP request smuggling (CL.TE, TE.CL)','Cache poisoning mechanics','CSP bypass techniques','Prototype pollution + subdomain takeover'], hrs:'~21 hrs' },
+    { n:'03', title:'Cryptography + PKI Depth', topics:['TLS 1.3 handshake internals','PKI chain of trust, OCSP, CRL stapling','Padding oracle, BEAST, POODLE','JWT attacks: alg:none, key confusion'], hrs:'~21 hrs' },
+  ]},
+  { phase:2, label:'Phase 2', name:'Attack Your Biggest Gaps', sub:'Cloud security, detection & response, supply chain', weeks:[
+    { n:'04', title:'Cloud Security Fundamentals', topics:['AWS IAM — policies, roles, IRSA, SCPs','IMDSv1 vs IMDSv2 — SSRF to cred theft','Common misconfigs: S3, SGs, Lambda','GCP workload identity federation'], hrs:'~21 hrs' },
+    { n:'05', title:'Kubernetes & Container Security', topics:['K8s threat model — API server, etcd, kubelet','Pod security standards + admission controllers','Container escape techniques','K8s RBAC common misconfigs'], hrs:'~21 hrs' },
+    { n:'06', title:'Detection, IR & Supply Chain', topics:['IR lifecycle — all 6 phases with examples','SIEM correlation + MITRE ATT&CK','Supply chain attacks: SolarWinds, XZ-utils','SLSA, Sigstore, SBOM formats'], hrs:'~21 hrs' },
+  ]},
+  { phase:3, label:'Phase 3', name:'Security Design & Coding', sub:'System design interviews + secure code review', weeks:[
+    { n:'07', title:'Security System Design', topics:['Design a secrets management system','Design a secure API gateway','Design an audit logging pipeline','Zero Trust / BeyondCorp deep dive'], hrs:'~21 hrs' },
+    { n:'08', title:'Secure Coding & Code Review', topics:['Spot vulns in Python/JS/Go snippets','JWT implementation review','Rate limiter with abuse prevention','Crypto mistakes to spot in code'], hrs:'~21 hrs' },
+  ]},
+  { phase:4, label:'Phase 4', name:'Mock Interviews & Polish', sub:'Simulate real interviews, close remaining gaps', weeks:[
+    { n:'09', title:'Full Mock Interviews', topics:['1 full mock/day — rotating all domains','Record yourself, review for clarity','Practice STAR behavioral format','Refine trade-off explanations'], hrs:'~21 hrs' },
+    { n:'10', title:'Target Company Prep', topics:['Research each company\'s security blog/talks','Prepare 3–4 behavioral STAR stories','Light review of weakest domains only','Rest — you\'ve done the work'], hrs:'~21 hrs' },
+  ]},
+];
+
+const KB = [
+  { domain:'Secure Design Principles', items:['Least Privilege','Defense in Depth','Fail Securely','Reduce Attack Surface','Privilege Separation','Don\'t Trust Input','Avoid Security Through Obscurity','Auditability / Non-repudiation','Zero Trust principles'] },
+  { domain:'Networking & Protocols', items:['TCP/IP — handshake, teardown, flags','TLS 1.2 vs 1.3 — handshake differences','DNS — resolution chain, DNSSEC','DNS exfiltration — technique + detection','BGP — routing, hijacking','ARP — poisoning, gratuitous ARP','VPNs — tunnel types, split tunneling','SSH — key exchange, tunneling','MitM attacks — techniques + prevention','ICMP — ping, traceroute, abuse','LDAP — directory services, injection','gRPC vs REST security','Tor — onion routing, exit node risks','eBPF — security use cases (Falco, Tetragon)'] },
+  { domain:'Web / Application Security', items:['Same Origin Policy','CORS — preflight, misconfigs, null origin','Cookies — HttpOnly, Secure, SameSite','XSS — Reflected, Stored, DOM-based','CSRF — mechanics, SameSite, token pattern','SSRF — basic, blind, cloud metadata','SQL injection — classic, blind, time-based','Command injection','Path traversal / LFI','HSTS — preloading, bypass','CSP — directives, bypass techniques','HTTP request smuggling — CL.TE, TE.CL','Cache poisoning / cache deception','Prototype pollution','Subdomain takeover','Clickjacking — X-Frame-Options','Insecure deserialization','SSTI','XXE','BeyondCorp / zero trust web access','Browser extension security model'] },
+  { domain:'Cryptography', items:['Symmetric encryption — AES modes (ECB, CBC, GCM)','Asymmetric encryption — RSA, ECC','DHKE — mechanics, ephemeral vs static','Hash functions — properties, SHA-2 vs SHA-3','HMAC — construction, uses','Subresource Integrity (SRI)','Perfect Forward Secrecy','TLS 1.3 handshake in full','PKI — chain of trust, root/intermediate/leaf','OCSP, CRL, OCSP stapling','Certificate Transparency','Padding oracle, BEAST, POODLE, CRIME, BREACH','JWT — alg:none, key confusion, brute force','HSMs — use cases, key ceremony','Kerckhoff\'s Principle','Secure random number generation','Password hashing — bcrypt, scrypt, Argon2'] },
+  { domain:'Identity & Access Management', items:['OAuth 2.0 — all flows + PKCE','OpenID Connect — ID token, UserInfo','SAML — assertions, XML signature wrapping','Active Directory — Kerberos, pass-the-hash','Certificate Authorities — private CA','Root stores — how trust is established','RBAC vs ABAC vs PBAC','DAC vs MAC','PAM — just-in-time access','MFA — TOTP, FIDO2/WebAuthn, SMS risks','Session management — fixation, hijacking','Access token vs refresh token security','Preventing automated attacks'] },
+  { domain:'OS / Low-Level Security', items:['Linux file system — /proc, /tmp, /etc/shadow','Linux permissions — rwx, SUID/SGID, sticky bit','SELinux — MAC, contexts, policies','Kernel vs userspace — privilege rings','ASLR — how it works, bypass techniques','DEP/NX — non-executable stack/heap','Buffer overflow — stack, heap, ROP','RCE — techniques, mitigations','Linux privilege escalation techniques','Windows — Registry, Group Policy, SMB, NTLM','Malware techniques — process injection, DLL hijacking','Static vs dynamic analysis — IDA, Ghidra','eBPF security — Falco, Tetragon'] },
+  { domain:'Cloud & Infrastructure Security', items:['AWS IAM — policies, roles, SCPs, IRSA','AWS services — S3, EC2, Lambda, EKS, KMS','IMDSv1 vs IMDSv2 — SSRF to credential theft','Common AWS misconfigurations','AWS CloudTrail — logging, gaps','GCP IAM — workload identity federation','Azure managed identities','CSPM — tools (Prisma, Wiz, Security Hub)','Docker architecture — daemon, containerd, runc','Docker security — namespaces, cgroups, seccomp','Container escape techniques','Kubernetes architecture — API server, etcd, kubelet','Kubernetes RBAC — common misconfigs','Pod security standards','K8s network policies','Secrets in Kubernetes','Hypervisors — Type 1 vs Type 2'] },
+  { domain:'Supply Chain Security', items:['Dependency confusion attack','Typosquatting in package registries','Build pipeline compromise — SolarWinds anatomy','XZ-utils backdoor anatomy','SLSA framework — 4 levels','Sigstore / cosign — artifact signing','SBOM — CycloneDX vs SPDX','SCA in CI/CD','DAST / SAST / SCA — tools and placement'] },
+  { domain:'Detection & Response', items:['IR lifecycle — all 6 phases with examples','Log sources — network, host, app, cloud','SIEM fundamentals — ingestion, normalization, correlation','MITRE ATT&CK — framework, top techniques','EDR — capabilities vs AV','IOC types — and why behavioural > hash','Threat hunting basics','DFIR — disk forensics, memory forensics','Chain of custody'] },
+  { domain:'API Security', items:['BOLA (Broken Object Level Authorization)','BOPLA (Broken Object Property Level Authorization)','Unrestricted Resource Consumption','API authentication patterns — API keys, OAuth, mTLS','GraphQL security — introspection, batching, BOLA','REST vs gRPC security'] },
+  { domain:'System Design & Architecture', items:['Scaling — horizontal vs vertical, sharding','Caching — types, eviction policies','Async vs sync processing — queues, event-driven','Rate limiting — token bucket, leaky bucket, sliding window','Design patterns (all from knowledge base)','Secure SDLC — security at each stage','Security champions model','Policy as code — OPA'] },
+];
+
+const BEHAVIORAL = [
+  'Critical vulnerability found',
+  'Pushed back on a team for security',
+  'Security incident involvement',
+  'Security decision with incomplete information',
+  'Improved security without slowing engineering',
+];
+
+const RESOURCES = [
+  { domain:'Cloud Security', items:[
+    { text:'AWS IAM documentation + policy simulator', type:'free' },
+    { text:'HackTricks Cloud (cloud attack techniques)', type:'free' },
+    { text:'CloudGoat — vulnerable AWS labs (Rhino Security)', type:'lab' },
+    { text:'KubeGoat — vulnerable Kubernetes cluster', type:'lab' },
+    { text:'flaws.cloud + flaws2.cloud', type:'lab' },
+    { text:'Google Cloud Security Foundations guide', type:'free' },
+  ]},
+  { domain:'Web / ProdSec', items:[
+    { text:'PortSwigger Web Security Academy', type:'free' },
+    { text:'OWASP Testing Guide v4.2', type:'free' },
+    { text:'HackTheBox — web challenges', type:'lab' },
+    { text:'James Kettle HTTP smuggling research (PortSwigger blog)', type:'free' },
+  ]},
+  { domain:'Detection & IR', items:[
+    { text:'NIST SP 800-61 (IR guide)', type:'free' },
+    { text:'Blue Team Labs Online', type:'lab' },
+    { text:'Splunk SIEM fundamentals (free training)', type:'free' },
+    { text:'MITRE ATT&CK framework', type:'free' },
+  ]},
+  { domain:'Supply Chain', items:[
+    { text:'SLSA framework — slsa.dev', type:'free' },
+    { text:'Sigstore / cosign documentation', type:'free' },
+    { text:'Alex Birsan dependency confusion writeup', type:'free' },
+    { text:'CISA software supply chain guidance', type:'free' },
+  ]},
+  { domain:'System Design', items:[
+    { text:'HashiCorp Vault architecture docs', type:'free' },
+    { text:'Google BeyondCorp papers (all 6)', type:'free' },
+    { text:'AWS Well-Architected Security Pillar', type:'free' },
+  ]},
+  { domain:'Cryptography & PKI', items:[
+    { text:'Cloudflare blog — TLS 1.3 explainer', type:'free' },
+    { text:'JWT.io — decoder + attack references', type:'free' },
+    { text:'PortSwigger crypto labs', type:'lab' },
+  ]},
+  { domain:'Mock Interviews', items:[
+    { text:'Pramp — free peer mock interviews', type:'free' },
+    { text:'interviewing.io — paid, worth it for week 9', type:'paid' },
+    { text:'Use Claude for daily practice questions', type:'free' },
+  ]},
+];
+
+// ── STATE ──
+const state = {
+  companies: JSON.parse(localStorage.getItem('co') || '{}'),
+  weeks: JSON.parse(localStorage.getItem('wk') || '{}'),
+  kb: JSON.parse(localStorage.getItem('kb') || '{}'),
+  behavioral: JSON.parse(localStorage.getItem('beh') || '{}'),
+};
+function save() {
+  localStorage.setItem('co', JSON.stringify(state.companies));
+  localStorage.setItem('wk', JSON.stringify(state.weeks));
+  localStorage.setItem('kb', JSON.stringify(state.kb));
+  localStorage.setItem('beh', JSON.stringify(state.behavioral));
+  updateProgress();
+}
+
+// ── NAV ──
+function goto(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ── RENDER COMPANIES ──
+function renderCompanyTile(co, large) {
+  const status = state.companies[co.name] || 'todo';
+  const statusLabels = { todo:'not started', in:'in progress', done:'prepped' };
+  const statusClass = { todo:'status-todo', in:'status-in', done:'status-done' };
+  const div = document.createElement('div');
+  div.className = 'company-tile' + (status === 'done' ? ' done' : '');
+  div.style.setProperty('--tile-accent', co.color);
+  div.innerHTML = `
+    <div class="company-logo">${co.logo}</div>
+    <div class="company-name">${co.name}</div>
+    <div class="company-focus">${co.focus}</div>
+    <div class="company-status ${statusClass[status]}">● ${statusLabels[status]}</div>
+  `;
+  div.onclick = () => {
+    const cycle = { todo:'in', in:'done', done:'todo' };
+    state.companies[co.name] = cycle[status];
+    save();
+    renderAll();
+  };
+  return div;
+}
+
+function renderCompanyGrid() {
+  const g1 = document.getElementById('company-grid');
+  const g2 = document.getElementById('company-grid-full');
+  g1.innerHTML = ''; g2.innerHTML = '';
+  COMPANIES.forEach(co => {
+    g1.appendChild(renderCompanyTile(co, false));
+    g2.appendChild(renderCompanyTile(co, true));
+  });
+}
+
+// ── RENDER DOMAINS ──
+function renderDomains() {
+  const el = document.getElementById('domain-list');
+  el.innerHTML = '';
+  DOMAINS.forEach(d => {
+    const colors = { strong: '#3ecf8e', partial: '#f59e0b', gap: '#f87171' };
+    const color = colors[d.tag];
+    const tagLabels = { strong: 'solid', partial: 'partial', gap: 'gap' };
+    el.innerHTML += `
+      <div class="domain-row">
+        <div class="domain-icon">${d.icon}</div>
+        <div class="domain-info">
+          <div class="domain-name">${d.name}</div>
+          <div class="domain-desc">${d.desc}</div>
+        </div>
+        <div class="domain-bar-wrap">
+          <div class="domain-bar-bg"><div class="domain-bar-fill" style="width:${d.pct}%;background:${color}"></div></div>
+          <div class="domain-pct">${d.pct}%</div>
+        </div>
+        <div class="domain-tag tag-${d.tag}">${tagLabels[d.tag]}</div>
+      </div>
+    `;
+  });
+}
+
+// ── RENDER GAPS ──
+function renderGaps() {
+  const el = document.getElementById('gap-list');
+  el.innerHTML = '';
+  GAPS.forEach(g => {
+    const pc = { HIGH:'gap-high', MED:'gap-med', LOW:'gap-low' };
+    el.innerHTML += `
+      <div class="gap-card">
+        <div class="gap-priority ${pc[g.priority]}">${g.priority}</div>
+        <div class="gap-body">
+          <div class="gap-title">${g.title}</div>
+          <div class="gap-detail">${g.detail}</div>
+          <div class="gap-resources">${g.resources.map(r=>`<span class="gap-resource">${r}</span>`).join('')}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// ── RENDER PLAN ──
+function renderPlan() {
+  const el = document.getElementById('plan-content');
+  el.innerHTML = '';
+  const phaseCls = ['phase-1','phase-2','phase-3','phase-4'];
+  PLAN.forEach((phase, pi) => {
+    const pHeader = document.createElement('div');
+    pHeader.className = 'phase-header';
+    pHeader.innerHTML = `<span class="phase-badge ${phaseCls[pi]}">${phase.label}</span><div><div class="phase-name">${phase.name}</div><div class="phase-sub">${phase.sub}</div></div>`;
+    el.appendChild(pHeader);
+    const grid = document.createElement('div');
+    grid.className = 'weeks-grid';
+    phase.weeks.forEach(w => {
+      const checked = !!state.weeks[w.n];
+      const card = document.createElement('div');
+      card.className = 'week-card' + (checked ? ' checked' : '');
+      card.innerHTML = `
+        <div class="week-num">Week ${w.n}</div>
+        <div class="week-title">${w.title}</div>
+        <ul class="week-topics">${w.topics.map(t=>`<li>${t}</li>`).join('')}</ul>
+        <div class="week-footer">
+          <span class="week-hrs">${w.hrs}</span>
+          <div class="week-check">${checked ? '✓' : ''}</div>
+        </div>
+      `;
+      card.onclick = () => {
+        state.weeks[w.n] = !state.weeks[w.n];
+        save();
+        renderPlan();
+      };
+      grid.appendChild(card);
+    });
+    el.appendChild(grid);
+  });
+}
+
+// ── RENDER KB ──
+function renderKB() {
+  const el = document.getElementById('kb-grid');
+  el.innerHTML = '';
+  KB.forEach(domain => {
+    const div = document.createElement('div');
+    div.className = 'kb-domain';
+    const doneCount = domain.items.filter(item => state.kb[domain.domain + ':' + item]).length;
+    div.innerHTML = `
+      <div class="kb-domain-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="kb-domain-name">${domain.domain}</div>
+        <div class="kb-count">${doneCount}/${domain.items.length}</div>
+        <div class="kb-chevron">▾</div>
+      </div>
+      <div class="kb-items">${domain.items.map(item => {
+        const key = domain.domain + ':' + item;
+        const done = !!state.kb[key];
+        return `<div class="kb-item${done?' done':''}" data-key="${key}">
+          <div class="kb-checkbox">${done?'✓':''}</div>
+          <div class="kb-item-text">${item}</div>
+        </div>`;
+      }).join('')}</div>
+    `;
+    div.querySelectorAll('.kb-item').forEach(item => {
+      item.onclick = () => {
+        const key = item.dataset.key;
+        state.kb[key] = !state.kb[key];
+        save();
+        renderKB();
+        updateCounts();
+      };
+    });
+    el.appendChild(div);
+  });
+  updateCounts();
+}
+
+// ── RENDER BEHAVIORAL ──
+function renderBehavioral() {
+  const el = document.getElementById('behavioral-grid');
+  el.innerHTML = '';
+  BEHAVIORAL.forEach((story, i) => {
+    const card = document.createElement('div');
+    card.className = 'story-card';
+    const stars = ['Situation', 'Task', 'Action', 'Result'];
+    card.innerHTML = `<div class="story-title">${story}</div>` +
+      stars.map(s => `
+        <div class="star-field">
+          <div class="star-label">${s}</div>
+          <textarea class="star-input" placeholder="Write your ${s.toLowerCase()} here..." data-key="${i}:${s}">${state.behavioral[i+':'+s]||''}</textarea>
+        </div>
+      `).join('');
+    card.querySelectorAll('.star-input').forEach(ta => {
+      ta.oninput = () => {
+        state.behavioral[ta.dataset.key] = ta.value;
+        save();
+      };
+    });
+    el.appendChild(card);
+  });
+}
+
+// ── RENDER RESOURCES ──
+function renderResources() {
+  const el = document.getElementById('res-grid');
+  el.innerHTML = '';
+  RESOURCES.forEach(r => {
+    el.innerHTML += `
+      <div class="res-card">
+        <div class="res-domain-name">${r.domain}</div>
+        ${r.items.map(item => `
+          <div class="res-item">
+            <div class="res-text">${item.text}</div>
+            <span class="res-type r-${item.type}">${item.type}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  });
+}
+
+// ── PROGRESS ──
+function updateProgress() {
+  const weeks = Object.values(state.weeks).filter(Boolean).length;
+  document.getElementById('weeks-badge').textContent = weeks + '/10';
+  const pct = Math.round(weeks / 10 * 100);
+  document.getElementById('overall-pct').textContent = pct + '%';
+}
+function updateCounts() {
+  const total = KB.reduce((a,d) => a + d.items.length, 0);
+  const done = Object.values(state.kb).filter(Boolean).length;
+  document.getElementById('done-count').textContent = done;
+  document.getElementById('total-count').textContent = total;
+}
+
+// ── INIT ──
+function renderAll() {
+  renderCompanyGrid();
+  renderDomains();
+  renderGaps();
+  renderPlan();
+  renderKB();
+  renderBehavioral();
+  renderResources();
+  updateProgress();
+  updateCounts();
+}
+renderAll();
+setTimeout(() => {
+  document.querySelectorAll('.domain-bar-fill').forEach(bar => {
+    const w = bar.style.width; bar.style.width = '0'; 
+    requestAnimationFrame(() => { bar.style.width = w; });
+  });
+}, 100);
+</script>
+</body>
+</html>
